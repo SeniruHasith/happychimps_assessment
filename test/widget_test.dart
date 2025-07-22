@@ -7,24 +7,25 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:happychimps_assessment/core/api/dio_client.dart';
 import 'package:happychimps_assessment/main.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final navigatorKey = GlobalKey<NavigatorState>();
+    final dioClient = DioClient(prefs, navigatorKey: navigatorKey);
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await tester.pumpWidget(MyApp(
+      prefs: prefs,
+      dioClient: dioClient,
+      navigatorKey: navigatorKey,
+    ));
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify that the login screen is shown initially
+    expect(find.text('Welcome to Eridanus'), findsOneWidget);
+    expect(find.text('Login to continue shopping.'), findsOneWidget);
   });
 }

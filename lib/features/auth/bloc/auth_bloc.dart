@@ -15,11 +15,16 @@ abstract class AuthEvent extends Equatable {
 class LoginEvent extends AuthEvent {
   final String email;
   final String password;
+  final bool rememberMe;
 
-  const LoginEvent({required this.email, required this.password});
+  const LoginEvent({
+    required this.email,
+    required this.password,
+    this.rememberMe = false,
+  });
 
   @override
-  List<Object> get props => [email, password];
+  List<Object> get props => [email, password, rememberMe];
 }
 
 class LogoutEvent extends AuthEvent {}
@@ -50,12 +55,14 @@ class AuthAuthenticated extends AuthState {
 class AuthUnauthenticated extends AuthState {}
 
 class AuthError extends AuthState {
-  final String message;
+  final Failure failure;
 
-  const AuthError(this.message);
+  const AuthError(this.failure);
+
+  String get message => failure.message;
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [failure];
 }
 
 // Bloc
@@ -71,12 +78,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onLogin(LoginEvent event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
-      final authResponse = await _authRepository.login(event.email, event.password);
+      final authResponse = await _authRepository.login(
+        event.email,
+        event.password,
+        rememberMe: event.rememberMe,
+      );
       emit(AuthAuthenticated(authResponse));
     } on Failure catch (failure) {
-      emit(AuthError(failure.message));
+      emit(AuthError(failure));
     } catch (e) {
-      emit(const AuthError('An unexpected error occurred'));
+      emit(AuthError(const ServerFailure(message: 'An unexpected error occurred')));
     }
   }
 

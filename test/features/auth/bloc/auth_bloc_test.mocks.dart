@@ -38,17 +38,24 @@ class MockAuthRepository extends _i1.Mock implements _i3.AuthRepository {
   }
 
   @override
-  _i4.Future<_i2.AuthResponse> login(String? email, String? password) =>
+  _i4.Future<_i2.AuthResponse> login(
+    String? email,
+    String? password, {
+    bool rememberMe = false,
+  }) =>
       (super.noSuchMethod(
+        Invocation.method(
+          #login,
+          [email, password],
+          {#rememberMe: rememberMe},
+        ),
+        returnValue: _i4.Future<_i2.AuthResponse>.value(
+          _FakeAuthResponse_0(
+            this,
             Invocation.method(#login, [email, password]),
-            returnValue: _i4.Future<_i2.AuthResponse>.value(
-              _FakeAuthResponse_0(
-                this,
-                Invocation.method(#login, [email, password]),
-              ),
-            ),
-          )
-          as _i4.Future<_i2.AuthResponse>);
+          ),
+        ),
+      ) as _i4.Future<_i2.AuthResponse>);
 
   @override
   _i4.Future<void> logout() =>
