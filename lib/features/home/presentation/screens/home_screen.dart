@@ -16,15 +16,15 @@ class _HomeScreenState extends State<HomeScreen> {
   final _locationService = LocationService();
   final _searchController = TextEditingController();
   int _currentCarouselIndex = 0;
-  String _currentCity = 'Loading...';
+  String _currentCity = 'Getting location...';
   bool _isLoadingLocation = true;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    context.read<ProductBloc>().add(const LoadRecommendedProducts());
     _getCurrentLocation();
+    context.read<ProductBloc>().add(const LoadRecommendedProducts());
   }
 
   @override
@@ -35,23 +35,31 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _getCurrentLocation() async {
-    setState(() {
-      _isLoadingLocation = true;
-      _currentCity = 'Getting location...';
-    });
-
     try {
       final position = await _locationService.getCurrentPosition(context);
-      final city = await _locationService.getCityName(position);
-      setState(() {
-        _currentCity = city;
-        _isLoadingLocation = false;
-      });
+      if (position != null) {
+        final city = await _locationService.getCityName(position);
+        if (mounted) {
+          setState(() {
+            _currentCity = city;
+            _isLoadingLocation = false;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            _currentCity = 'Location not available';
+            _isLoadingLocation = false;
+          });
+        }
+      }
     } catch (e) {
-      setState(() {
-        _currentCity = 'Location unavailable';
-        _isLoadingLocation = false;
-      });
+      if (mounted) {
+        setState(() {
+          _currentCity = 'Location not available';
+          _isLoadingLocation = false;
+        });
+      }
     }
   }
 
@@ -113,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Row(
               children: [
                 Icon(
-                  Icons.location_on_outlined,
+                  Icons.location_on,
                   size: 16,
                   color: Colors.white.withOpacity(0.8),
                 ),
@@ -136,18 +144,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         Colors.white.withOpacity(0.8),
                       ),
                     ),
-                  ),
-                ] else if (_currentCity == 'Location unavailable') ...[
-                  const SizedBox(width: 8),
-                  TextButton(
-                    onPressed: _getCurrentLocation,
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(0, 0),
-                      foregroundColor: Colors.white,
-                      textStyle: const TextStyle(fontSize: 12),
-                    ),
-                    child: const Text('Retry'),
                   ),
                 ],
               ],

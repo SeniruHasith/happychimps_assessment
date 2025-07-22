@@ -19,8 +19,6 @@ class DioClient {
         receiveTimeout: const Duration(milliseconds: receiveTimeout),
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Tz': 'Europe/London',
         },
       ),
     )..interceptors.addAll([
@@ -42,15 +40,18 @@ class DioClient {
 class _AuthInterceptor extends Interceptor {
   final SharedPreferences _prefs;
   static const String _tokenKey = 'auth_token';
-  static const String _refreshTokenKey = 'refresh_token';
+  static const String _loginEndpoint = '/api/pos/auth/login';
 
   _AuthInterceptor(this._prefs);
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    final token = _prefs.getString(_tokenKey);
-    if (token != null) {
-      options.headers['Authorization'] = 'Bearer $token';
+    // Skip adding token for login endpoint
+    if (options.path != _loginEndpoint) {
+      final token = _prefs.getString(_tokenKey);
+      if (token != null) {
+        options.headers['Authorization'] = 'Bearer $token';
+      }
     }
     handler.next(options);
   }
@@ -58,40 +59,8 @@ class _AuthInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     if (err.response?.statusCode == 401) {
-      // Token expired, try to refresh
-      try {
-        final refreshToken = _prefs.getString(_refreshTokenKey);
-        if (refreshToken != null) {
-          final dio = Dio(BaseOptions(baseUrl: DioClient.baseUrl));
-          final response = await dio.post(
-            '/api/v2/auth/refresh',
-            data: {'refresh_token': refreshToken},
-          );
-
-          if (response.statusCode == 200) {
-            final newToken = response.data['token'];
-            final newRefreshToken = response.data['refresh_token'];
-
-            await _prefs.setString(_tokenKey, newToken);
-            await _prefs.setString(_refreshTokenKey, newRefreshToken);
-
-            // Retry the original request with the new token
-            final options = err.requestOptions;
-            options.headers['Authorization'] = 'Bearer $newToken';
-            
-            try {
-              final response = await dio.fetch(options);
-              return handler.resolve(response);
-            } on DioException catch (e) {
-              return handler.next(e);
-            }
-          }
-        }
-      } catch (e) {
-        // If refresh fails, clear tokens and let the error propagate
-        await _prefs.remove(_tokenKey);
-        await _prefs.remove(_refreshTokenKey);
-      }
+      // Clear token on 401 error
+      await _prefs.remove(_tokenKey);
     }
     handler.next(err);
   }

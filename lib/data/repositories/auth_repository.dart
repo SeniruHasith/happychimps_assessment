@@ -25,6 +25,13 @@ class AuthRepository {
         },
       );
 
+      if (response.data['error'] != null) {
+        throw ServerFailure(
+          message: response.data['error'] ?? 'Login failed',
+          statusCode: response.statusCode,
+        );
+      }
+
       final result = response.data['result'];
       final authResponse = AuthResponse.fromJson(result);
       
