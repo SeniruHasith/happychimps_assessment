@@ -8,12 +8,14 @@ class ProductModel {
   final String name;
   final String description;
   final double price;
-  @JsonKey(name: 'image_url')
+  @JsonKey(name: 'imageUrl')
   final String imageUrl;
   final double rating;
-  @JsonKey(name: 'is_recommended')
+  @JsonKey(name: 'isRecommended')
   final bool isRecommended;
-  @JsonKey(name: 'created_at')
+  @JsonKey(defaultValue: 0)
+  final int discount;
+  @JsonKey(name: 'createdAt')
   final DateTime createdAt;
 
   ProductModel({
@@ -24,6 +26,7 @@ class ProductModel {
     required this.imageUrl,
     required this.rating,
     required this.isRecommended,
+    required this.discount,
     required this.createdAt,
   });
 

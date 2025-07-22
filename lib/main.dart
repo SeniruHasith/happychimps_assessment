@@ -13,22 +13,26 @@ import 'features/profile/presentation/screens/profile_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
-  final dioClient = DioClient(prefs);
+  final navigatorKey = GlobalKey<NavigatorState>();
+  final dioClient = DioClient(prefs, navigatorKey: navigatorKey);
   
   runApp(MyApp(
     prefs: prefs,
     dioClient: dioClient,
+    navigatorKey: navigatorKey,
   ));
 }
 
 class MyApp extends StatelessWidget {
   final SharedPreferences prefs;
   final DioClient dioClient;
+  final GlobalKey<NavigatorState> navigatorKey;
 
   const MyApp({
     super.key,
     required this.prefs,
     required this.dioClient,
+    required this.navigatorKey,
   });
 
   @override
@@ -39,7 +43,7 @@ class MyApp extends StatelessWidget {
           create: (context) => AuthRepository(dioClient, prefs),
         ),
         RepositoryProvider(
-          create: (context) => ProductRepository(dioClient),
+          create: (context) => ProductRepository(),
         ),
       ],
       child: MultiBlocProvider(
@@ -56,6 +60,7 @@ class MyApp extends StatelessWidget {
           ),
         ],
         child: MaterialApp(
+          navigatorKey: navigatorKey,
           title: 'Eridanus',
           theme: ThemeData(
             colorScheme: ColorScheme.light(

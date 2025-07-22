@@ -41,6 +41,9 @@ class AuthRepository {
       await _prefs.setString(_userKey, result['user'].toString());
       await _prefs.setString(_companyKey, result['company'].toString());
 
+      // Save token expiry
+      _dioClient.authInterceptor.saveTokenExpiry(authResponse.accessToken);
+
       return authResponse;
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {

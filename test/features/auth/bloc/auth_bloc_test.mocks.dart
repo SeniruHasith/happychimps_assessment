@@ -24,8 +24,8 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeUserModel_0 extends _i1.SmartFake implements _i2.UserModel {
-  _FakeUserModel_0(Object parent, Invocation parentInvocation)
+class _FakeAuthResponse_0 extends _i1.SmartFake implements _i2.AuthResponse {
+  _FakeAuthResponse_0(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
@@ -38,17 +38,17 @@ class MockAuthRepository extends _i1.Mock implements _i3.AuthRepository {
   }
 
   @override
-  _i4.Future<_i2.UserModel> login(String? email, String? password) =>
+  _i4.Future<_i2.AuthResponse> login(String? email, String? password) =>
       (super.noSuchMethod(
             Invocation.method(#login, [email, password]),
-            returnValue: _i4.Future<_i2.UserModel>.value(
-              _FakeUserModel_0(
+            returnValue: _i4.Future<_i2.AuthResponse>.value(
+              _FakeAuthResponse_0(
                 this,
                 Invocation.method(#login, [email, password]),
               ),
             ),
           )
-          as _i4.Future<_i2.UserModel>);
+          as _i4.Future<_i2.AuthResponse>);
 
   @override
   _i4.Future<void> logout() =>
@@ -68,10 +68,10 @@ class MockAuthRepository extends _i1.Mock implements _i3.AuthRepository {
           as bool);
 
   @override
-  _i4.Future<_i2.UserModel?> getCurrentUser() =>
+  _i4.Future<_i2.AuthResponse?> getCurrentUser() =>
       (super.noSuchMethod(
             Invocation.method(#getCurrentUser, []),
-            returnValue: _i4.Future<_i2.UserModel?>.value(),
+            returnValue: _i4.Future<_i2.AuthResponse?>.value(),
           )
-          as _i4.Future<_i2.UserModel?>);
+          as _i4.Future<_i2.AuthResponse?>);
 }
