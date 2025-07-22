@@ -61,7 +61,7 @@ class MyApp extends StatelessWidget {
         ],
         child: MaterialApp(
           navigatorKey: navigatorKey,
-          title: 'Eridanus',
+          title: 'XYZ',
           theme: ThemeData(
             colorScheme: ColorScheme.light(
               primary: const Color(0xFF00E676),

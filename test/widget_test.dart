@@ -25,7 +25,7 @@ void main() {
     ));
 
     // Verify that the login screen is shown initially
-    expect(find.text('Welcome to Eridanus'), findsOneWidget);
+    expect(find.text('Welcome to XYZ'), findsOneWidget);
     expect(find.text('Login to continue shopping.'), findsOneWidget);
   });
 }

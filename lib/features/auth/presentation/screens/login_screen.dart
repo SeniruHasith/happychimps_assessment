@@ -255,7 +255,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 24),
                   const Text(
-                    'Welcome to Eridanus',
+                    'Welcome to XYZ',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w600,
